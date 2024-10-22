@@ -12,7 +12,7 @@ const app = express();
 connectDB();
 
 const corsOptions = {
-    origin: "http://example.com",
+    origin: "http://localhost:5173",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     allowedHeaders: "Content-Type,Authorization"
 };
@@ -21,7 +21,7 @@ app.use(cors(corsOptions));
 
 const limiter = rateLimit({
     windowMs: 5 * 60 * 1000,
-    max: 50,
+    max: 100,
     message: 'The number of requests is becoming overwhelming, please try again after 5 minutes'
 });
 
