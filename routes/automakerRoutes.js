@@ -3,12 +3,13 @@ import {
     addNewAutomaker, getAllAutomakers, getAutomakerById, 
     updateAutomaker, deleteAutomaker 
 } from '../controllers/automakerController.js';
+import auth from '../middleware/auth.js';
 const router = express.Router();
 
-router.post('/', addNewAutomaker);
-router.get('/', getAllAutomakers);
-router.get('/:id', getAutomakerById);
-router.put('/:id', updateAutomaker);
-router.delete('/:id', deleteAutomaker);
+router.post('/', auth, addNewAutomaker);
+router.get('/', auth, getAllAutomakers);
+router.get('/:id', auth, getAutomakerById);
+router.put('/:id', auth, updateAutomaker);
+router.delete('/:id', auth, deleteAutomaker);
 
 export default router;
