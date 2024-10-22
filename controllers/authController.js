@@ -8,7 +8,7 @@ export const registerUser = async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
 
     try {
         let user = await User.findOne({ username });
@@ -17,13 +17,14 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({ msg: 'Username is already taken' });
         }
 
-        user = new User({ username, password });
+        user = new User({ username, password, role });
 
         await user.save();
 
         const payload = {
             user: {
-                id: user.id
+                id: user.id,
+                role: user.role
             }
         };
 
@@ -62,7 +63,8 @@ export const loginUser = async (req, res) => {
 
         const payload = {
             user: {
-                id: user.id
+                id: user.id,
+                role: user.role
             }
         };
 

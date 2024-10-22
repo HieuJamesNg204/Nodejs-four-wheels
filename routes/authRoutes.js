@@ -8,7 +8,8 @@ router.post(
     '/register',
     [
         check('username', 'Username is required').not().isEmpty(),
-        check('password', 'Password is required').isLength({ min: 8 })
+        check('password', 'Password is required').isLength({ min: 8 }),
+        check('role', 'Role is required').isIn(['admin', 'customer'])
     ],
     registerUser
 );
