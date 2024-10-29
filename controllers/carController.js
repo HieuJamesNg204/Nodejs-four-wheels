@@ -22,6 +22,21 @@ export const getCarById = async (req, res) => {
     }
 };
 
+export const getCarsByAutomaker = async (req, res) => {
+    try {
+        const { automaker } = req.params;
+        const cars = await Car.find({ automaker }).populate('automaker');
+
+        if (cars.length > 0) {
+            res.json(cars);
+        } else {
+            res.status(404).send('No cars found for this automaker');
+        }
+    } catch (error) {
+        res.status(500).send('Server Error');
+    }
+}
+
 export const addNewCar = async (req, res) => {
     try {
         const { 
