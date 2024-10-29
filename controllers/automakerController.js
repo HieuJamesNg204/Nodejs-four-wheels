@@ -1,4 +1,5 @@
 import Automaker from '../models/automaker.js';
+import Car from '../models/car.js';
 
 export const getAllAutomakers = async (req, res) => {
     try {
@@ -49,6 +50,7 @@ export const updateAutomaker = async (req, res) => {
 
 export const deleteAutomaker = async (req, res) => {
     try {
+        await Car.deleteMany({ automaker: req.params.id });
         const automaker = await Automaker.findByIdAndDelete(req.params.id);
         if (automaker) {
             res.status(204).send();
