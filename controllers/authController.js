@@ -89,3 +89,34 @@ export const getUser = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
+export const getUserByUsername = async (req, res) => {
+    try {
+        const user = await User.findOne({ username: req.params.username });
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+export const updateUserPassword = async (req, res) => {
+    try {
+        const user = await User.findOne({ username: req.params.username });
+        if (user) {
+            const { newPassword } = req.body;
+            user.password = newPassword;
+            await user.save();
+            res.json(user);
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server Error');
+    }
+};
