@@ -14,7 +14,7 @@ export const registerUser = async (req, res) => {
         let user = await User.findOne({ username });
 
         if (user) {
-            return res.status(400).json({ msg: 'Username is already taken' });
+            return res.status(409).json({ msg: 'Username is already taken' });
         }
 
         user = new User({ username, password, role });
@@ -52,13 +52,13 @@ export const loginUser = async (req, res) => {
         let user = await User.findOne({ username });
 
         if (!user) {
-            return res.status(400).json({ msg: 'Invalid Credentials' });
+            return res.status(401).json({ msg: 'Wrong username' });
         }
 
         const match = await user.matchPassword(password);
 
         if (!match) {
-            return res.status(400).json({ msg: 'Invalid Credentials' });
+            return res.status(401).json({ msg: 'Wrong password' });
         }
 
         const payload = {

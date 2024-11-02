@@ -26,9 +26,14 @@ export const getAutomakerById = async (req, res) => {
 export const addNewAutomaker = async (req, res) => {
     try {
         const { id, name } = req.body;
-        const automaker = new Automaker({ id, name });
-        await automaker.save();
-        res.status(201).json(automaker);
+        const automakerExists = await Automaker.findOne({ name });
+        if (!automakerExists) {
+            const automaker = new Automaker({ id, name });
+            await automaker.save();
+            res.status(201).json(automaker);
+        } else {
+            res.status(409).send('It looks like the given automaker already exists');
+        }
     } catch (error) {
         res.status(500).send('Server Error');
     }
