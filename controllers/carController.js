@@ -32,6 +32,24 @@ export const getCarsByAutomaker = async (req, res) => {
     }
 }
 
+export const getCarsByPriceRange = async (req, res) => {
+    res.send('Hello World');
+    // try {
+    //     const minPrice = parseFloat(req.query.minPrice) || 0;
+    //     const maxPrice = parseFloat(req.query.maxPrice) || Number.MAX_SAFE_INTEGER;
+
+    //     const cars = await Car.find({
+    //         price: { $gte: minPrice, $lte: maxPrice }
+    //     }).populate('automaker');
+
+    //     res.json(cars);
+    // } catch (error) {
+    //     res.status(500).json({
+    //         error: error.message
+    //     });
+    // }
+}
+
 export const addNewCar = async (req, res) => {
     try {
         const { 
