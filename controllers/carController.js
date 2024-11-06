@@ -2,8 +2,19 @@ import Car from '../models/car.js';
 
 export const getAllCars = async (req, res) => {
     try {
-        const cars = await Car.find().populate('automaker');
-        res.json(cars);
+        if (Object.keys(req.query).length === 0) {
+            const cars = await Car.find().populate('automaker');
+            res.json(cars);
+        } else {
+            const minPrice = parseFloat(req.query.minPrice) || 0;
+            const maxPrice = parseFloat(req.query.maxPrice) || Number.MAX_SAFE_INTEGER;
+
+            const cars = await Car.find({
+                price: { $gte: minPrice, $lte: maxPrice }
+            }).populate('automaker');
+
+            res.json(cars);
+        }
     } catch (error) {
         res.status(500).send('Server Error');
     }
@@ -25,8 +36,21 @@ export const getCarById = async (req, res) => {
 export const getCarsByAutomaker = async (req, res) => {
     try {
         const { automaker } = req.params;
-        const cars = await Car.find({ automaker }).populate('automaker');
-        res.json(cars);
+
+        if (Object.keys(req.query).length === 0) {
+            const cars = await Car.find({ automaker }).populate('automaker');
+            res.json(cars);
+        } else {
+            const minPrice = parseFloat(req.query.minPrice) || 0;
+            const maxPrice = parseFloat(req.query.maxPrice) || Number.MAX_SAFE_INTEGER;
+
+            const cars = await Car.find({
+                automaker,
+                price: { $gte: minPrice, $lte: maxPrice }
+            }).populate('automaker');
+
+            res.json(cars);
+        }
     } catch (error) {
         res.status(500).send('Server Error');
     }
@@ -40,12 +64,14 @@ export const addNewCar = async (req, res) => {
             colour, engineType, transmission, 
             mileage, seatingCapacity 
         } = req.body;
+
         const car = new Car({ 
             automaker, model, 
             year, bodyStyle, price, 
             colour, engineType, transmission, 
             mileage, seatingCapacity 
         });
+        
         await car.save();
         res.status(201).json(car);
     } catch (error) {
