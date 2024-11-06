@@ -42,11 +42,16 @@ export const addNewAutomaker = async (req, res) => {
 export const updateAutomaker = async (req, res) => {
     try {
         const { name } = req.body;
-        const automaker = await Automaker.findByIdAndUpdate(req.params.id, { name }, { new: true });
-        if (automaker) {
-            res.json(automaker);
+        const automakerExists = await Automaker.findOne({ name });
+        if (!automakerExists) {
+            const automaker = await Automaker.findByIdAndUpdate(req.params.id, { name }, { new: true });
+            if (automaker) {
+                res.json(automaker);
+            } else {
+                res.status(404).send('Automaker not found');
+            }
         } else {
-            res.status(404).send('Automaker not found');
+            res.status(409).send('It looks like the new name for the automaker coincides with another existing one.');
         }
     } catch (error) {
         res.status(500).send('Server Error');
