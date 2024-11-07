@@ -1,4 +1,5 @@
 import Car from '../models/car.js';
+import fs from 'fs';
 
 export const getAllCars = async (req, res) => {
     try {
@@ -86,6 +87,11 @@ export const addNewCar = async (req, res) => {
 
 export const updateCar = async (req, res) => {
     try {
+        const car = await Car.findById(req.params.id);
+        if (!car) {
+            return res.status(404).send('Car not found');
+        }
+
         const { 
             automaker, model, 
             year, bodyStyle, price, 
@@ -93,23 +99,35 @@ export const updateCar = async (req, res) => {
             mileage, seatingCapacity 
         } = req.body;
 
-        const car = await Car.findByIdAndUpdate(
-            req.params.id,
-            { 
-                automaker, model, 
-                year, bodyStyle, price, 
-                colour, engineType, transmission, 
-                mileage, seatingCapacity,
-                image: req.file.path
-            },
-            { new: true }
-        );
+        let updatedCar;
 
-        if (car) {
-            res.json(car);
+        if (req.file) {
+            fs.unlinkSync(car.image);
+            updatedCar = await Car.findByIdAndUpdate(
+                req.params.id,
+                { 
+                    automaker, model, 
+                    year, bodyStyle, price, 
+                    colour, engineType, transmission, 
+                    mileage, seatingCapacity,
+                    image: req.file.path
+                },
+                { new: true }
+            );
         } else {
-            res.status(404).send('Car not found');
+            updatedCar = await Car.findByIdAndUpdate(
+                req.params.id,
+                { 
+                    automaker, model, 
+                    year, bodyStyle, price, 
+                    colour, engineType, transmission, 
+                    mileage, seatingCapacity
+                },
+                { new: true }
+            );
         }
+
+        res.json(updatedCar);
     } catch (error) {
         res.status(500).send('Server Error');
     }
@@ -119,6 +137,7 @@ export const deleteCar = async (req, res) => {
     try {
         const car = await Car.findByIdAndDelete(req.params.id);
         if (car) {
+            fs.unlinkSync(car.image);
             res.status(204).send();
         } else {
             res.status(404).send('Car not found');
