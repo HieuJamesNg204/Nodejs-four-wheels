@@ -41,6 +41,10 @@ const carSchema = new mongoose.Schema({
     seatingCapacity: {
         type: Number,
         required: true
+    },
+    image: {
+        type: String,
+        required: true
     }
 });
 

@@ -65,11 +65,16 @@ export const addNewCar = async (req, res) => {
             mileage, seatingCapacity 
         } = req.body;
 
+        if (!req.file) {
+            return res.status(400).json({ message: 'Please upload an image' });
+        }
+
         const car = new Car({ 
             automaker, model, 
             year, bodyStyle, price, 
             colour, engineType, transmission, 
-            mileage, seatingCapacity 
+            mileage, seatingCapacity,
+            image: req.file.path
         });
         
         await car.save();
@@ -87,16 +92,19 @@ export const updateCar = async (req, res) => {
             colour, engineType, transmission, 
             mileage, seatingCapacity 
         } = req.body;
+
         const car = await Car.findByIdAndUpdate(
             req.params.id,
             { 
                 automaker, model, 
                 year, bodyStyle, price, 
                 colour, engineType, transmission, 
-                mileage, seatingCapacity 
+                mileage, seatingCapacity,
+                image: req.file.path
             },
             { new: true }
         );
+
         if (car) {
             res.json(car);
         } else {

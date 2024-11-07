@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes.js';
 import connectDB from './db.js';
 
 const app = express();
+app.use('/uploads', express.static('uploads'));
 
 connectDB();
 
