@@ -1,5 +1,6 @@
 import Automaker from '../models/automaker.js';
 import Car from '../models/car.js';
+import fs from 'fs';
 
 export const getAllAutomakers = async (req, res) => {
     try {
@@ -60,6 +61,12 @@ export const updateAutomaker = async (req, res) => {
 
 export const deleteAutomaker = async (req, res) => {
     try {
+        const associatedCars = await Car.find({ automaker: req.params.id });
+
+        associatedCars.forEach(car => {
+            fs.unlinkSync(car.image);
+        });
+        
         await Car.deleteMany({ automaker: req.params.id });
         const automaker = await Automaker.findByIdAndDelete(req.params.id);
         if (automaker) {
