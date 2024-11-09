@@ -4,7 +4,7 @@ import fs from 'fs';
 
 export const getAllAutomakers = async (req, res) => {
     try {
-        const automakers = await Automaker.find();
+        const automakers = await Automaker.find().sort({ name: 1 });
         res.json(automakers);
     } catch (error) {
         res.status(500).send('An error occurred while processing your request');
