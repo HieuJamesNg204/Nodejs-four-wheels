@@ -17,7 +17,7 @@ export const getAllCars = async (req, res) => {
             res.json(cars);
         }
     } catch (error) {
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };
 
@@ -27,10 +27,10 @@ export const getCarById = async (req, res) => {
         if (car) {
             res.json(car);
         } else {
-            res.status(404).send('Car not found');
+            res.status(404).send('Car not found.');
         }
     } catch (error) {
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };
 
@@ -53,7 +53,7 @@ export const getCarsByAutomaker = async (req, res) => {
             res.json(cars);
         }
     } catch (error) {
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };
 
@@ -66,8 +66,10 @@ export const addNewCar = async (req, res) => {
             mileage, seatingCapacity 
         } = req.body;
 
-        if (!req.file) {
-            return res.status(400).json({ message: 'Please upload an image' });
+        if (!automaker || !model || !year || !bodyStyle || !price ||
+            !colour || !engineType || !transmission || !mileage || 
+            !seatingCapacity || !req.file) {
+            return res.status(400).send('Data insufficient.');
         }
 
         const car = new Car({ 
@@ -81,7 +83,7 @@ export const addNewCar = async (req, res) => {
         await car.save();
         res.status(201).json(car);
     } catch (error) {
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };
 
@@ -89,7 +91,7 @@ export const updateCar = async (req, res) => {
     try {
         const car = await Car.findById(req.params.id);
         if (!car) {
-            return res.status(404).send('Car not found');
+            return res.status(404).send('Car not found.');
         }
 
         const { 
@@ -98,6 +100,12 @@ export const updateCar = async (req, res) => {
             colour, engineType, transmission, 
             mileage, seatingCapacity 
         } = req.body;
+
+        if (!automaker || !model || !year || !bodyStyle || !price ||
+            !colour || !engineType || !transmission || !mileage || 
+            !seatingCapacity) {
+            return res.status(400).send('Data insufficient.');
+        }
 
         let updatedCar;
 
@@ -129,7 +137,7 @@ export const updateCar = async (req, res) => {
 
         res.json(updatedCar);
     } catch (error) {
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };
 
@@ -140,9 +148,9 @@ export const deleteCar = async (req, res) => {
             fs.unlinkSync(car.image);
             res.status(204).send();
         } else {
-            res.status(404).send('Car not found');
+            res.status(404).send('Car not found.');
         }
     } catch (error) {
-        res.status(500).send('Server Error');
+        res.status(500).send('Server error');
     }
 };

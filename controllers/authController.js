@@ -14,7 +14,7 @@ export const registerUser = async (req, res) => {
         let user = await User.findOne({ username });
 
         if (user) {
-            return res.status(409).json({ msg: 'Username is already taken' });
+            return res.status(409).send('Username is already taken.');
         }
 
         user = new User({ username, password, role });
@@ -35,8 +35,7 @@ export const registerUser = async (req, res) => {
             res.json({ token });
         });
     } catch (error) {
-        console.error(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };
 
@@ -52,13 +51,13 @@ export const loginUser = async (req, res) => {
         let user = await User.findOne({ username });
 
         if (!user) {
-            return res.status(401).json({ msg: 'Wrong username' });
+            return res.status(401).send('Invalid username or password.');
         }
 
-        const match = await user.matchPassword(password);
+        const passwordMatched = await user.matchPassword(password);
 
-        if (!match) {
-            return res.status(401).json({ msg: 'Wrong password' });
+        if (!passwordMatched) {
+            return res.status(401).send('Invalid username or password.');
         }
 
         const payload = {
@@ -75,8 +74,7 @@ export const loginUser = async (req, res) => {
             res.json({ token });
         });
     } catch (error) {
-        console.error(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };
 
@@ -85,8 +83,7 @@ export const getUser = async (req, res) => {
         const user = await User.findById(req.user.id).select('-password');
         res.json(user);
     } catch (error) {
-        console.error(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };
 
@@ -96,27 +93,30 @@ export const getUserByUsername = async (req, res) => {
         if (user) {
             res.json(user);
         } else {
-            res.status(404).send('User not found');
+            res.status(404).send('User not found.');
         }
     } catch (error) {
-        console.error(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };
 
 export const updateUserPassword = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     try {
         const user = await User.findOne({ username: req.params.username });
         if (user) {
-            const { newPassword } = req.body;
-            user.password = newPassword;
+            const { password } = req.body;
+            user.password = password;
             await user.save();
             res.json(user);
         } else {
-            res.status(404).send('User not found');
+            res.status(404).send('User not found.');
         }
     } catch (error) {
-        console.error(error.message);
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };

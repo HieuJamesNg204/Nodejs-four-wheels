@@ -23,7 +23,7 @@ app.use(cors(corsOptions));
 const limiter = rateLimit({
     windowMs: 5 * 60 * 1000,
     max: 120,
-    message: 'The number of requests is becoming overwhelming, please try again after 5 minutes'
+    message: 'The number of requests is becoming overwhelming, please try again after 5 minutes.'
 });
 
 app.use(limiter);

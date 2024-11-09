@@ -7,7 +7,7 @@ export const getAllAutomakers = async (req, res) => {
         const automakers = await Automaker.find();
         res.json(automakers);
     } catch (error) {
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };
 
@@ -17,10 +17,10 @@ export const getAutomakerById = async (req, res) => {
         if (automaker) {
             res.json(automaker);
         } else {
-            res.status(404).send('Automaker not found');
+            res.status(404).send('Automaker not found.');
         }
     } catch (error) {
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };
 
@@ -33,10 +33,10 @@ export const addNewAutomaker = async (req, res) => {
             await automaker.save();
             res.status(201).json(automaker);
         } else {
-            res.status(409).send('It looks like the given automaker already exists');
+            res.status(409).send('An automaker with this name already exists.');
         }
     } catch (error) {
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };
 
@@ -49,13 +49,13 @@ export const updateAutomaker = async (req, res) => {
             if (automaker) {
                 res.json(automaker);
             } else {
-                res.status(404).send('Automaker not found');
+                res.status(404).send('Automaker not found.');
             }
         } else {
-            res.status(409).send('It looks like the new name for the automaker coincides with another existing one.');
+            res.status(409).send('An automaker with this name already exists.');
         }
     } catch (error) {
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };
 
@@ -72,9 +72,9 @@ export const deleteAutomaker = async (req, res) => {
         if (automaker) {
             res.status(204).send();
         } else {
-            res.status(404).send('Automaker not found');
+            res.status(404).send('Automaker not found.');
         }
     } catch (error) {
-        res.status(500).send('Server Error');
+        res.status(500).send('An error occurred while processing your request');
     }
 };
