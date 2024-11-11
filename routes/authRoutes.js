@@ -4,6 +4,43 @@ import { registerUser, loginUser, getUser, getUserByUsername, updateUserPassword
 import auth from '../middleware/auth.js';
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Authentication management
+ */
+
+/**
+ * @swagger
+ * /fourwheels/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - password
+ *               - role
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [admin, customer]
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: Invalid input
+ */
 router.post(
     '/register',
     [
@@ -14,6 +51,32 @@ router.post(
     registerUser
 );
 
+/**
+ * @swagger
+ * /fourwheels/auth/login:
+ *   post:
+ *     summary: Log in a user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User logged in successfully
+ *       400:
+ *         description: Invalid username or password
+ */
 router.post(
     '/login',
     [
@@ -23,8 +86,92 @@ router.post(
     loginUser
 );
 
+/**
+ * @swagger
+ * /fourwheels/auth:
+ *   get:
+ *     summary: Get information of logged in user
+ *     tags: [Auth]
+ *     security:
+ *       - ApiKeyAuth: []
+ *     responses:
+ *       200:
+ *         description: Information of user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       500:
+ *         description: Some server errors
+ */
 router.get('/', auth, getUser);
+
+/**
+ * @swagger
+ * /fourwheels/auth/{username}:
+ *   get:
+ *     summary: Get information of a provided username
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *             properties:
+ *               username:
+ *                 type: string
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The username
+ *     responses:
+ *       200:
+ *         description: Information of user with provided username
+ *         contents:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/User'
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Some server errors
+ */
 router.get('/:username', getUserByUsername);
+
+/**
+ * @swagger
+ * /fourwheels/auth/{username}:
+ *   put:
+ *     summary: Update user's password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           $ref: '#/components/schemas/User'
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The username
+ *     responses:
+ *       200:
+ *         description: The password was successfully changed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/User'
+ *       400:
+ *         description: Invalid input
+ */
 router.put(
     '/:username', 
     [

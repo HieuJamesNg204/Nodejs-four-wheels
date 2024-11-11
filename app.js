@@ -6,6 +6,8 @@ import carRoutes from './routes/carRoutes.js';
 import automakerRoutes from './routes/automakerRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import connectDB from './db.js';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swagger.js';
 
 const app = express();
 app.use('/uploads', express.static('uploads'));
@@ -33,5 +35,7 @@ app.use(bodyParser.json());
 app.use('/fourwheels/cars', carRoutes);
 app.use('/fourwheels/automakers', automakerRoutes);
 app.use('/fourwheels/auth', authRoutes);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 export default app;
