@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import carRoutes from './routes/carRoutes.js';
 import automakerRoutes from './routes/automakerRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
 import connectDB from './db.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swagger.js';
@@ -35,6 +36,7 @@ app.use(bodyParser.json());
 app.use('/fourwheels/cars', carRoutes);
 app.use('/fourwheels/automakers', automakerRoutes);
 app.use('/fourwheels/auth', authRoutes);
+app.use('/fourwheels/orders', orderRoutes);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
