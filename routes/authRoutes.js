@@ -1,6 +1,9 @@
 import express from 'express';
 import { check } from 'express-validator';
-import { registerUser, loginUser, getUser, getUserByUsername, updateUserPassword } from '../controllers/authController.js';
+import { 
+    registerUser, loginUser, getUser, 
+    getUserByUsername, resetUserPassword, updateUserPhoneNumber, updateUserPassword
+} from '../controllers/authController.js';
 import auth from '../middleware/auth.js';
 const router = express.Router();
 
@@ -45,8 +48,10 @@ router.post(
     '/register',
     [
         check('username', 'Username is required').not().isEmpty(),
+        check('password', 'Password is required').not().isEmpty(),
         check('password', 'Password is too short').isLength({ min: 8 }),
         check('phoneNumber', 'Phone number is required').not().isEmpty(),
+        check('phoneNumber', 'Phone number is not valid').isMobilePhone('any'),
         check('role', 'Role is required').isIn(['admin', 'customer'])
     ],
     registerUser
@@ -124,13 +129,6 @@ router.get('/', auth, getUser);
  *             properties:
  *               username:
  *                 type: string
- *     parameters:
- *       - in: path
- *         name: username
- *         schema:
- *           type: string
- *         required: true
- *         description: The username
  *     responses:
  *       200:
  *         description: Information of user with provided username
@@ -143,7 +141,7 @@ router.get('/', auth, getUser);
  *       500:
  *         description: Some server errors
  */
-router.get('/:username', getUserByUsername);
+router.get('/get/username', getUserByUsername);
 
 /**
  * @swagger
@@ -156,13 +154,6 @@ router.get('/:username', getUserByUsername);
  *       content:
  *         application/json:
  *           $ref: '#/components/schemas/User'
- *     parameters:
- *       - in: path
- *         name: username
- *         schema:
- *           type: string
- *         required: true
- *         description: The username
  *     responses:
  *       200:
  *         description: The password was successfully changed
@@ -174,9 +165,69 @@ router.get('/:username', getUserByUsername);
  *         description: Invalid input
  */
 router.put(
-    '/:username', 
+    '/:id/passwords/reset', 
     [
         check('password', 'Password is too short').isLength({ min: 8 })
+    ],
+    resetUserPassword
+);
+
+/**
+ * @swagger
+ * /fourwheels/auth/{username}:
+ *   put:
+ *     summary: Update user's phone number
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           $ref: '#/components/schemas/User'
+ *     responses:
+ *       200:
+ *         description: The phone number was successfully changed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/User'
+ *       400:
+ *         description: Invalid input
+ */
+router.put(
+    '/:id/phoneNumbers/update', auth,
+    [
+        check('phoneNumber', 'Phone number is not valid').isMobilePhone('any')
+    ],
+    updateUserPhoneNumber
+);
+
+/**
+ * @swagger
+ * /fourwheels/auth/{username}:
+ *   put:
+ *     summary: Update user's password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           $ref: '#/components/schemas/User'
+ *     responses:
+ *       200:
+ *         description: The password was successfully changed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/User'
+ *       400:
+ *         description: Invalid input
+ */
+router.put(
+    '/:id/passwords/update', auth,
+    [
+        check('currentPassword', 'Current password is required').not().isEmpty(),
+        check('newPassword', 'New password is required').not().isEmpty(),
+        check('newPassword', 'New password is too short').isLength({ min: 8 })
     ],
     updateUserPassword
 );

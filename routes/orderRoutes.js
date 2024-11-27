@@ -1,5 +1,8 @@
 import express from "express";
-import { addNewOrder, getAllOrders, getOrderById, updateOrder, deleteOrder } from "../controllers/orderController.js";
+import { 
+    addNewOrder, getAllOrders, getOrderById, 
+    updateOrder, deleteOrder, getAllOrdersByUser 
+} from "../controllers/orderController.js";
 import auth from "../middleware/auth.js";
 import role from "../middleware/role.js";
 const router = express.Router();
@@ -26,6 +29,8 @@ const router = express.Router();
  *           schema:
  *             $ref: '#/components/schemas/Order'
  *     responses:
+ *       404:
+ *         description: Car not found
  *       201:
  *         description: The order was successfully created
  *         content:
@@ -53,7 +58,34 @@ router.post('/', auth, role(['customer']), addNewOrder);
  *               items:
  *                 $ref: '#/components/schemas/Order' 
  */
-router.get('/', auth, getAllOrders);
+router.get('/', auth, role(['admin']), getAllOrders);
+
+/**
+ * @swagger
+ * /fourwheels/orders/users/{userId}:
+ *   get:
+ *     summary: Get all orders by user
+ *     tags: [Orders]
+ *     security:
+ *       - ApiKeyAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The user ID
+ *     responses:
+ *       200:
+ *         description: The list of the orders
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Order'
+ */
+router.get('/users', auth, role(['customer']), getAllOrdersByUser);
 
 /**
  * @swagger

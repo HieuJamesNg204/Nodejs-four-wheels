@@ -89,8 +89,51 @@ export const getUser = async (req, res) => {
 
 export const getUserByUsername = async (req, res) => {
     try {
-        const user = await User.findOne({ username: req.params.username });
+        const { username } = req.query;
+        const user = await User.findOne({ username });
         if (user) {
+            res.json(user);
+        } else {
+            res.status(404).send('User not found.');
+        }
+    } catch (error) {
+        res.status(500).send('An error occurred while processing your request');
+    }
+};
+
+export const resetUserPassword = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+        const user = await User.findById(req.params.id);
+        if (user) {
+            const { password } = req.body;
+            user.password = password;
+            await user.save();
+            res.json(user);
+        } else {
+            res.status(404).send('User not found.');
+        }
+    } catch (error) {
+        res.status(500).send('An error occurred while processing your request');
+    }
+};
+
+export const updateUserPhoneNumber = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+        const user = await User.findById(req.params.id);
+        if (user) {
+            const { phoneNumber } = req.body;
+            user.phoneNumber = phoneNumber;
+            await user.save();
             res.json(user);
         } else {
             res.status(404).send('User not found.');
@@ -107,10 +150,17 @@ export const updateUserPassword = async (req, res) => {
     }
 
     try {
-        const user = await User.findOne({ username: req.params.username });
+        const user = await User.findById(req.params.id);
         if (user) {
-            const { password } = req.body;
-            user.password = password;
+            const { currentPassword, newPassword } = req.body;
+            
+            const passwordMatched = await user.matchPassword(currentPassword);
+
+            if (!passwordMatched) {
+                return res.status(403).send('Invalid current password.');
+            }
+
+            user.password = newPassword;
             await user.save();
             res.json(user);
         } else {
