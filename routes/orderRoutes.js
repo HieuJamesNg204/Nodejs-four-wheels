@@ -26,7 +26,7 @@ const router = express.Router();
  *           schema:
  *             $ref: '#/components/schemas/Order'
  *     responses:
- *       200:
+ *       201:
  *         description: The order was successfully created
  *         content:
  *           application/json:

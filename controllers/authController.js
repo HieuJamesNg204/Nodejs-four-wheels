@@ -8,7 +8,7 @@ export const registerUser = async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { username, password, role } = req.body;
+    const { username, phoneNumber, password, role } = req.body;
 
     try {
         let user = await User.findOne({ username });
@@ -17,7 +17,7 @@ export const registerUser = async (req, res) => {
             return res.status(409).send('Username is already taken.');
         }
 
-        user = new User({ username, password, role });
+        user = new User({ username, phoneNumber, password, role });
 
         await user.save();
 

@@ -46,6 +46,7 @@ router.post(
     [
         check('username', 'Username is required').not().isEmpty(),
         check('password', 'Password is too short').isLength({ min: 8 }),
+        check('phoneNumber', 'Phone number is required').not().isEmpty(),
         check('role', 'Role is required').isIn(['admin', 'customer'])
     ],
     registerUser
