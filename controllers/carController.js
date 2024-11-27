@@ -4,7 +4,7 @@ import fs from 'fs';
 export const getAllCars = async (req, res) => {
     try {
         if (Object.keys(req.query).length === 0) {
-            const cars = await Car.find().populate('automaker');
+            const cars = await Car.find({ status: 'available'}).populate('automaker');
             res.json(cars);
         } else {
             const minPrice = parseFloat(req.query.minPrice) || 0;

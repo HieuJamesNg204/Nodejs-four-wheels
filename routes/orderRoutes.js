@@ -1,7 +1,7 @@
 import express from "express";
 import { 
     addNewOrder, getAllOrders, getOrderById, 
-    updateOrder, deleteOrder, getAllOrdersByUser 
+    updateOrderFee, setOrderStatus, deleteOrder, getAllOrdersByUser 
 } from "../controllers/orderController.js";
 import auth from "../middleware/auth.js";
 import role from "../middleware/role.js";
@@ -116,9 +116,36 @@ router.get('/:id', auth, getOrderById);
 
 /**
  * @swagger
+ * /fourwheels/orders/{id}/statusUpdate:
+ *   get:
+ *     summary: update status of an order
+ *     tags: [Orders]
+ *     security:
+ *       - ApiKeyAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The order ID
+ *     responses:
+ *       200:
+ *         description: The order status was successfully updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Order'
+ *       404:
+ *         description: Order not found
+ */
+router.put('/:id/statusUpdate', auth, role(['admin']), setOrderStatus);
+
+/**
+ * @swagger
  * /fourwheels/orders/{id}:
  *   put:
- *     summary: Update an order
+ *     summary: Update fee of an order
  *     tags: [Orders]
  *     security:
  *       - ApiKeyAuth: []
@@ -137,7 +164,7 @@ router.get('/:id', auth, getOrderById);
  *             $ref: '#/components/schemas/Order'
  *     responses:
  *       200:
- *         description: The order was successfully updated
+ *         description: The order fee was successfully updated
  *         content:
  *           application/json:
  *             schema:
@@ -145,7 +172,7 @@ router.get('/:id', auth, getOrderById);
  *       404:
  *         description: Order not found
  */
-router.put('/:id', auth, role(['admin']), updateOrder);
+router.put('/:id/feeUpdate', auth, role(['admin']), updateOrderFee);
 
 /**
  * @swagger
