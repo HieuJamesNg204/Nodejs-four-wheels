@@ -1,17 +1,19 @@
 import Car from '../models/car.js';
 import fs from 'fs';
+import Order from '../models/order.js';
 
 export const getAllCars = async (req, res) => {
     try {
         if (Object.keys(req.query).length === 0) {
-            const cars = await Car.find({ status: 'available'}).populate('automaker');
+            const cars = await Car.find({ status: 'available' }).populate('automaker');
             res.json(cars);
         } else {
             const minPrice = parseFloat(req.query.minPrice) || 0;
             const maxPrice = parseFloat(req.query.maxPrice) || Number.MAX_SAFE_INTEGER;
 
             const cars = await Car.find({
-                price: { $gte: minPrice, $lte: maxPrice }
+                price: { $gte: minPrice, $lte: maxPrice },
+                status: 'available'
             }).populate('automaker');
 
             res.json(cars);
@@ -39,7 +41,7 @@ export const getCarsByAutomaker = async (req, res) => {
         const { automaker } = req.params;
 
         if (Object.keys(req.query).length === 0) {
-            const cars = await Car.find({ automaker }).populate('automaker');
+            const cars = await Car.find({ automaker, status: 'available' }).populate('automaker');
             res.json(cars);
         } else {
             const minPrice = parseFloat(req.query.minPrice) || 0;
@@ -47,7 +49,8 @@ export const getCarsByAutomaker = async (req, res) => {
 
             const cars = await Car.find({
                 automaker,
-                price: { $gte: minPrice, $lte: maxPrice }
+                price: { $gte: minPrice, $lte: maxPrice },
+                status: 'available'
             }).populate('automaker');
 
             res.json(cars);
@@ -146,6 +149,8 @@ export const deleteCar = async (req, res) => {
         const car = await Car.findByIdAndDelete(req.params.id);
         if (car) {
             fs.unlinkSync(car.image);
+
+            await Order.deleteMany({ car: car.id });
             res.status(204).send();
         } else {
             res.status(404).send('Car not found.');
