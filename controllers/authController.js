@@ -112,12 +112,14 @@ export const resetUserPassword = async (req, res) => {
         if (user) {
             const { password } = req.body;
             user.password = password;
+            
             await user.save();
             res.json(user);
         } else {
             res.status(404).send('User not found.');
         }
     } catch (error) {
+        console.log(error);
         res.status(500).send('An error occurred while processing your request');
     }
 };

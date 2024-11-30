@@ -147,7 +147,7 @@ router.get('/get/username', getUserByUsername);
  * @swagger
  * /fourwheels/auth/{username}:
  *   put:
- *     summary: Update user's password
+ *     summary: reset user password
  *     tags: [Auth]
  *     requestBody:
  *       required: true
